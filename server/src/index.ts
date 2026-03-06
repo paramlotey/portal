@@ -9,6 +9,7 @@ import profileRoute from './modules/profile/profile.routes'
 import authRoute from './modules/auth/user/user.routes'
 import errorHandler from "./middleware/errorrMiddleware";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 const app = express();
 const PORT = 8000;
 
@@ -58,6 +59,10 @@ const swaggerConfig = swaggerJsdoc({
 })();
 
 // Middleware
+app.use(cors({
+  credentials:true,
+  origin:"http://localhost:8080"
+}))
 app.use(express.json());
 app.use(cookieParser())
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
