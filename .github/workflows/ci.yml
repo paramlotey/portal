@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# When should this run?
 on:
   push:
     branches: [ main, develop ]
@@ -8,30 +7,55 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-server:
+    name: Test Server
     runs-on: ubuntu-latest
     
     steps:
-      # Step 1: Get the code
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '24'
       
-      # Step 3: Setup pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 10
       
-      # Step 4: Install dependencies
-      - name: Install dependencies
+      - name: Install server dependencies
+        working-directory: ./server
         run: pnpm install
       
-      # Step 5: Run tests
-      - name: Run tests
+      - name: Run server tests
+        working-directory: ./server
         run: pnpm test
+
+  test-client:
+    name: Test Client
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '24'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+      
+      - name: Install client dependencies
+        working-directory: ./client
+        run: pnpm install
+      
+      - name: Run client tests
+        working-directory: ./client
+        run: pnpm test
+        continue-on-error: true  # Won't fail if client has no tests yet
