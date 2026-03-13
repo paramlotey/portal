@@ -29,9 +29,9 @@ jobs:
         working-directory: ./server
         run: pnpm install
       
-      - name: Run server tests
+      - name: Run server tests with coverage
         working-directory: ./server
-        run: pnpm test
+        run: pnpm test:coverage
 
   test-client:
     name: Test Client
@@ -58,4 +58,4 @@ jobs:
       - name: Run client tests
         working-directory: ./client
         run: pnpm test
-        continue-on-error: true  # Won't fail if client has no tests yet
+        continue-on-error: true

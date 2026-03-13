@@ -28,7 +28,7 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   // Implementation for fetching a profile by ID or other criteria can be added here
   const profile = await get_Profile();
 
-  return apiResponse(200, "Profile Fetched Successfuly", true, res, profile);
+  return apiResponse(200, "Profiles fetched successfully", true, res, profile);
 });
 
 export const updateProfile = asyncHandler(

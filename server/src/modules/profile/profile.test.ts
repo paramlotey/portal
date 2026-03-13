@@ -1,23 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import * as profileService from "./profile.service";
-import { createProfile } from "./profile.controller";
+import { createProfile, getProfile } from "./profile.controller";
+import { mockExpress } from "../../utils/mockExpress";
 
 jest.mock("./profile.service");
 
+let mockNext: NextFunction;
+let mockRequest: Partial<Request>;
+let mockResponse: Partial<Response>;
+let responseJson: jest.Mock;
+let responseStatus: jest.Mock;
+
+beforeEach(() => {
+  const mocks = mockExpress();
+  mockNext = mocks.mockNext;
+  mockRequest = mocks.mockRequest;
+  mockResponse = mocks.mockResponse;
+  responseJson = mocks.responseJson;
+  responseStatus = mocks.responseStatus;
+});
 describe("Profile Controller - create Profile", () => {
-  let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
-  let mockNext: NextFunction;
-  let responseJson: jest.Mock;
-  let responseStatus: jest.Mock;
-
   beforeEach(() => {
-    responseJson = jest.fn();
-    responseStatus = jest.fn().mockReturnValue({ json: responseJson });
-
-    // 👇 ADD THIS - Mock next function
-    mockNext = jest.fn();
-
     mockRequest = {
       body: {
         name: "Rahul Singh",
@@ -61,11 +64,6 @@ describe("Profile Controller - create Profile", () => {
         education_level: "GRADUATE",
         bio: "Simple and family-oriented person.",
       },
-    };
-
-    mockResponse = {
-      status: responseStatus,
-      json: responseJson,
     };
   });
 
@@ -133,5 +131,49 @@ describe("Profile Controller - create Profile", () => {
 
     // 👇 Check that error was passed to next()
     expect(mockNext).toHaveBeenCalledWith(validationError);
+  });
+});
+
+describe("Profile Controller - get all Profiles", () => {
+  beforeEach(() => {
+    mockRequest = {};
+  });
+  test("Should get all profiles", async () => {
+    const mockProfiles = [
+      {
+        id: "123",
+        name: "John Doe",
+        email: "john@example.com",
+      },
+    ];
+    (profileService.get_Profile as jest.Mock).mockResolvedValue(mockProfiles);
+    await getProfile(
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext,
+    );
+
+    expect(responseStatus).toHaveBeenCalledWith(200);
+    expect(responseJson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        message: "Profiles fetched successfully",
+        data: mockProfiles,
+      }),
+    );
+    expect(profileService.get_Profile).toHaveBeenCalled();
+  });
+   test("Handle errors from service layer", async () => {
+    const errorMessage = "Database Connection Failed";
+    const mockError = new Error(errorMessage);
+    (profileService.get_Profile as jest.Mock).mockRejectedValue(mockError);
+
+    // 👇 PASS mockNext here too
+    await getProfile(
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext,
+    );
+    expect(mockNext).toHaveBeenCalledWith(mockError);
   });
 });

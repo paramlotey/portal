@@ -11,7 +11,7 @@ import errorHandler from "./middleware/errorrMiddleware";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT;
 
 const server = http.createServer(app);
 const io = new Server(server, {

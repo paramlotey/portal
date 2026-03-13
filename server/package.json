@@ -8,13 +8,15 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "migrate": "ts-node src/database/migrate.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage":"jest --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.27.0",
   "devDependencies": {
+    "@jest/globals": "^30.3.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^8.2.3",
