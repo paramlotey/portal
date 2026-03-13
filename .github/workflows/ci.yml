@@ -59,3 +59,14 @@ jobs:
         working-directory: ./client
         run: pnpm test
         continue-on-error: true
+
+  deploy:
+    name: Deploy to Render
+    needs: [test-server, test-client]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
