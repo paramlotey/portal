@@ -89,7 +89,7 @@ describe("Profile Controller - create Profile", () => {
     expect(profileService.create_Profile).toHaveBeenCalledWith(
       mockRequest.body,
     );
-    expect(responseStatus).toHaveBeenCalledWith(501);
+    expect(responseStatus).toHaveBeenCalledWith(201);
     expect(responseJson).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
