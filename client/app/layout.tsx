@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ReduxProvider from "@/lib/providers/ReduxProvider";
+import { ThemeProvider } from "next-themes";
+import { RouteLoader } from "@/components/user/RouteLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
+            <RouteLoader/>
+            <TooltipProvider>{children}</TooltipProvider>
+          </ThemeProvider>
         </ReduxProvider>
       </body>
     </html>

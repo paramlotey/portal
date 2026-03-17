@@ -163,7 +163,7 @@ describe("Profile Controller - get all Profiles", () => {
     );
     expect(profileService.get_Profile).toHaveBeenCalled();
   });
-   test("Handle errors from service layer", async () => {
+  test("Handle errors from service layer", async () => {
     const errorMessage = "Database Connection Failed";
     const mockError = new Error(errorMessage);
     (profileService.get_Profile as jest.Mock).mockRejectedValue(mockError);
