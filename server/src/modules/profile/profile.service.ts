@@ -41,7 +41,27 @@ interface Profile {
   bio: string;
 }
 
+interface Preferences {
+  marital_status: string;
+  children_details: string;
+  country_prefrence: string;
+  state_prefrence: string;
+  city_prefrence: string;
+  age_range: string;
+  height_range: string;
+  complexion: string;
+  body_type: string;
+  family_status: string;
+  education_level: string;
+  religion: string;
+  manglik_status: string;
+  turban_pagri: string;
+  occupation_type: string;
+  occupation: string;
+}
+
 import pool from "../../config/db";
+import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/ApiError";
 
 export const getAllEnums = async () => {
@@ -90,7 +110,9 @@ export const get_Profile = async () => {
 
 export const get_ProfileById = async (id: string) => {
   const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
-  if ((result.rows.length = 0)) {
+  
+  // ❌ FIXED: Was using = instead of ===
+  if (result.rows.length === 0) {
     throw new ApiError(400, "Profile Does Not Exist");
   }
   return result.rows[0];
@@ -134,8 +156,189 @@ export const get_ProfileByUserId = async (id: string) => {
   const result = await pool.query(`SELECT * FROM profile WHERE user_id = $1`, [
     id,
   ]);
-  if ((result.rows.length = 0)) {
+  
+  // ❌ FIXED: Was using = instead of ===
+  if (result.rows.length === 0) {
     throw new ApiError(400, "Profile Does Not Exist");
   }
   return result.rows[0];
+};
+
+export const get_PreferencesByProfileId = async (profileId: string) => {
+  const result = await prisma.partnerPreference.findUnique({
+    where: {
+      profileId: profileId,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(400, "Partner Preferences Do Not Exist");
+  }
+
+  return result;
+};
+
+export const get_AllPreferences = async () => {
+  const result = await prisma.partnerPreference.findMany();
+
+  if (result.length === 0) {
+    throw new ApiError(400, "No Partner Preferences Found");
+  }
+
+  return result;
+};
+
+export const get_PreferencesWithProfile = async (profileId: string) => {
+  const result = await prisma.partnerPreference.findUnique({
+    where: {
+      profileId: profileId,
+    },
+    include: {
+      profile: true,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(400, "Partner Preferences Do Not Exist");
+  }
+
+  return result;
+};
+
+export const get_PreferencesByUserIdOptimized = async (userId: number) => {
+  const result = await prisma.profiles.findFirst({
+    where: {
+      created_by: userId,
+    },
+    include: {
+      partnerPreference: true,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(400, "Profile Does Not Exist");
+  }
+
+  if (!result.partnerPreference) {
+    throw new ApiError(400, "Partner Preferences Do Not Exist");
+  }
+
+  return result.partnerPreference;
+};
+
+// ✅ FIXED: Proper Prisma create with correct data structure
+export const create_PreferenceByUserID = async (
+  userId: number,
+  data: Preferences,
+) => {
+  // Find the profile first
+  const profile = await prisma.profiles.findFirst({
+    where: {
+      created_by: userId,
+    },
+  });
+
+  if (!profile) {
+    throw new ApiError(400, "Profile Does Not Exist");
+  }
+
+  // Check if preferences already exist
+  const existingPreference = await prisma.partnerPreference.findUnique({
+    where: {
+      profileId: profile.id,
+    },
+  });
+
+  if (existingPreference) {
+    throw new ApiError(400, "Partner Preferences Already Exist");
+  }
+
+  // Create new preference with proper data structure
+  const newPreference = await prisma.partnerPreference.create({
+    data: {
+      profileId: profile.id,  // ✅ Connect to profile
+      marital_status: data.marital_status as any,
+      children_details: data.children_details as any,
+      country_prefrence: data.country_prefrence,
+      state_prefrence: data.state_prefrence,
+      city_prefrence: data.city_prefrence,
+      age_range: data.age_range,
+      height_range: data.height_range,
+      complexion: data.complexion as any,
+      body_type: data.body_type as any,
+      family_status: data.family_status as any,
+      education_level: data.education_level as any,
+      religion: data.religion as any,
+      manglik_status: data.manglik_status as any,
+      turban_pagri: data.turban_pagri as any,
+      occupation_type: data.occupation_type as any,
+      occupation: data.occupation,
+    },
+  });
+
+  return newPreference;  // ✅ Return the created preference
+};
+
+// ✅ BONUS: Upsert version (create or update)
+export const upsert_PreferenceByUserID = async (
+  userId: number,
+  data: Preferences,
+) => {
+  // Find the profile first
+  const profile = await prisma.profiles.findFirst({
+    where: {
+      created_by: userId,
+    },
+  });
+
+  if (!profile) {
+    throw new ApiError(400, "Profile Does Not Exist");
+  }
+
+  // Upsert: create if doesn't exist, update if exists
+  const preference = await prisma.partnerPreference.upsert({
+    where: {
+      profileId: profile.id,
+    },
+    create: {
+      profileId: profile.id,
+      marital_status: data.marital_status as any,
+      children_details: data.children_details as any,
+      country_prefrence: data.country_prefrence,
+      state_prefrence: data.state_prefrence,
+      city_prefrence: data.city_prefrence,
+      age_range: data.age_range,
+      height_range: data.height_range,
+      complexion: data.complexion as any,
+      body_type: data.body_type as any,
+      family_status: data.family_status as any,
+      education_level: data.education_level as any,
+      religion: data.religion as any,
+      manglik_status: data.manglik_status as any,
+      turban_pagri: data.turban_pagri as any,
+      occupation_type: data.occupation_type as any,
+      occupation: data.occupation,
+    },
+    update: {
+      marital_status: data.marital_status as any,
+      children_details: data.children_details as any,
+      country_prefrence: data.country_prefrence,
+      state_prefrence: data.state_prefrence,
+      city_prefrence: data.city_prefrence,
+      age_range: data.age_range,
+      height_range: data.height_range,
+      complexion: data.complexion as any,
+      body_type: data.body_type as any,
+      family_status: data.family_status as any,
+      education_level: data.education_level as any,
+      religion: data.religion as any,
+      manglik_status: data.manglik_status as any,
+      turban_pagri: data.turban_pagri as any,
+      occupation_type: data.occupation_type as any,
+      occupation: data.occupation,
+      updated_at: new Date(),
+    },
+  });
+
+  return preference;
 };

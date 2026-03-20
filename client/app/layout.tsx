@@ -5,7 +5,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ReduxProvider from "@/lib/providers/ReduxProvider";
 import { ThemeProvider } from "next-themes";
 import { RouteLoader } from "@/components/user/RouteLoader";
+import { Inter, Playfair_Display } from "next/font/google";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,11 +39,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfair.variable} antialiased`}
       >
         <ReduxProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
-            <RouteLoader/>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange={false}
+          >
+            <RouteLoader />
             <TooltipProvider>{children}</TooltipProvider>
           </ThemeProvider>
         </ReduxProvider>

@@ -4,6 +4,10 @@ import {
   create_Profile,
   create_ProfileByUserId,
   delete_Profile,
+  get_AllPreferences,
+  get_PreferencesByProfileId,
+  get_PreferencesByUserIdOptimized,
+  get_PreferencesWithProfile,
   get_Profile,
   get_ProfileById,
   get_ProfileByUserId,
@@ -70,5 +74,59 @@ export const createProfileByUserId = asyncHandler(
     const { id } = req.params as { id: string };
     const profile = await create_ProfileByUserId(id, req.body);
     return apiResponse(201, "Profile Created Successfuly", true, res, profile);
+  },
+);
+
+export const getPreferencesByProfileId = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const preference = await get_PreferencesByProfileId(id);
+    return apiResponse(
+      200,
+      "Prefrence Found For This User",
+      true,
+      res,
+      preference,
+    );
+  },
+);
+
+export const getAllPreferences = asyncHandler(
+  async (req: Request, res: Response) => {
+    const allPreferences = await get_AllPreferences();
+    return apiResponse(
+      200,
+      "All Prefernces Found For The User",
+      true,
+      res,
+      allPreferences,
+    );
+  },
+);
+
+export const getPreferencesWithProfile = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const preference = await get_PreferencesWithProfile(id);
+    return apiResponse(
+      200,
+      "Prefrence Found For This User",
+      true,
+      res,
+      preference,
+    );
+  },
+);
+export const getPreferencesByUserIdOptimized = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const preference = await get_PreferencesByUserIdOptimized(Number(id));
+    return apiResponse(
+      200,
+      "Prefrence Found For This User",
+      true,
+      res,
+      preference,
+    );
   },
 );

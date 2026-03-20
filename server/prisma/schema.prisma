@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model migrations {
+  id       Int       @id @default(autoincrement())
+  filename String    @unique @db.VarChar(255)
+  ran_at   DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model partnerPreference {
+  id String @id @default(uuid())
+
+  profileId String   @unique
+  profile   profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  marital_status    maritial_status
+  children_details  children_details
+  country_prefrence String
+  state_prefrence   String
+  city_prefrence    String
+  age_range         String
+  height_range      String
+  complexion        complexion
+  body_type         body_type
+  family_status     family_status
+  education_level   education_level
+  religion          religion
+  manglik_status    manglik_status
+  turban_pagri      turban_pagri
+  occupation_type   occupation_type
+  occupation        String
+
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model profiles {
+  id                 String              @id() @default(uuid())
+  created_by         Int?
+  name               String              @db.VarChar(100)
+  email              String              @unique @db.VarChar(100)
+  gender             gender_type
+  date_of_birth      DateTime            @db.Date
+  time_of_birth      DateTime            @db.Time(6)
+  place_of_birth     String              @db.VarChar(255)
+  no_of_brothers     String?             @db.VarChar(50)
+  no_of_sisters      String?             @db.VarChar(50)
+  marital_status     maritial_status
+  children_details   children_details
+  address            String?
+  city               String              @db.VarChar(100)
+  state              String              @db.VarChar(100)
+  country            String              @db.VarChar(100)
+  pincode            String?             @db.VarChar(10)
+  phone              String?             @db.VarChar(15)
+  occupation_type    occupation_type
+  occupation         String              @db.VarChar(100)
+  annual_income      annual_income_range
+  height_feet        Int
+  height_inches      Int
+  body_type          body_type
+  smoking_habit      smoking_habit
+  drinking_habit     drinking_habit
+  complexion         complexion
+  diet_preference    diet_preference
+  physical_status    physical_status
+  turban_pagri       turban_pagri
+  manglik_status     manglik_status
+  religion           religion
+  caste              caste
+  paternal_surname   String?             @db.VarChar(100)
+  maternal_surname   String?             @db.VarChar(100)
+  mother_tongue      mother_tongue
+  profile_created_by profile_createdby
+  family_background  family_background
+  family_status      family_status
+  residency_status   residency_status
+  education_level    education_level
+  bio                String?
+  created_at         DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?           @default(now()) @db.Timestamp(6)
+  users              users?              @relation(fields: [created_by], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  partnerPreference  partnerPreference?
+}
+
+model users {
+  id          Int        @id @default(autoincrement())
+  email       String     @unique @db.VarChar(100)
+  password    String     @db.VarChar(255)
+  otp         String?    @db.VarChar(6)
+  is_premium  Boolean?   @default(false)
+  is_verified Boolean?   @default(false)
+  created_at  DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?  @default(now()) @db.Timestamp(6)
+  profiles    profiles[]
+}
+
+enum annual_income_range {
+  No_Income                @map("No Income")
+  Rs_50000                 @map("0- Rs.50000")
+  Rs_50001___Rs_100000     @map("Rs.50001 - Rs.100000")
+  Rs_100001___Rs_500000    @map("Rs.100001 - Rs.500000")
+  Rs_500001___Rs_1000000   @map("Rs.500001 - Rs.1000000")
+  Rs_1000001___Rs_1500000  @map("Rs.1000001 - Rs.1500000")
+  Rs_1500001___Rs_2000000  @map("Rs.1500001 - Rs.2000000")
+  Rs_2000001___Rs_2500000  @map("Rs.2000001 - Rs.2500000")
+  Rs_2500001___Rs_3000000  @map("Rs.2500001 - Rs.3000000")
+  Rs_3000001___Rs_3500000  @map("Rs.3000001 - Rs.3500000")
+  Rs_3500001___Rs_4000000  @map("Rs.3500001 - Rs.4000000")
+  Rs_4000001___Rs_4500000  @map("Rs.4000001 - Rs.4500000")
+  Rs_4500001___Rs_5000000  @map("Rs.4500001 - Rs.5000000")
+  Rs_5000001___Rs_5500000  @map("Rs.5000001 - Rs.5500000")
+  Rs_5500001___Rs_6000000  @map("Rs.5500001 - Rs.6000000")
+  Rs_6000001___Rs_6500000  @map("Rs.6000001 - Rs.6500000")
+  Rs_6500001___Rs_7000000  @map("Rs.6500001 - Rs.7000000")
+  Rs_7000001___Rs_7500000  @map("Rs.7000001 - Rs.7500000")
+  Rs_7500001___Rs_8000000  @map("Rs.7500001 - Rs.8000000")
+  Rs_8000001___Rs_8500000  @map("Rs.8000001 - Rs.8500000")
+  Rs_8500001___Rs_9000000  @map("Rs.8500001 - Rs.9000000")
+  Rs_9000001___Rs_9500000  @map("Rs.9000001 - Rs.9500000")
+  Rs_9500001___Rs_10000000 @map("Rs.9500001 - Rs.10000000")
+  Above_Rs_10000000        @map("Above Rs.10000000")
+}
+
+enum body_type {
+  Slim
+  Average
+  Athletic
+  Heavy
+}
+
+enum caste {
+  Ramgharia_Dhimaan @map("Ramgharia/Dhimaan")
+  Ramgharia_Khati   @map("Ramgharia/Khati")
+  Arora_Hindu       @map("Arora/Hindu")
+  Arora_Sikh        @map("Arora/Sikh")
+  Sikh_Khatri       @map("Sikh/Khatri")
+  Hindu_Khatri      @map("Hindu/Khatri")
+  Kamboj_Kamboh     @map("Kamboj/Kamboh")
+  Mahton
+  Chhimba
+  Rajput
+  Jat
+  Mohyal
+  Chamar
+  Sikh_Saini        @map("Sikh Saini")
+  Hindu_Saini       @map("Hindu Saini")
+  Suniyara
+  Labana_Jats       @map("Labana Jats")
+  Bhapa
+  Baniya
+  Mazbi_Sikh        @map("Mazbi Sikh")
+  Dogras
+  SC
+  BC
+  Ahluwalia
+  Aggarwal
+}
+
+enum children_details {
+  No
+  Yes__Living_Together     @map("Yes, Living Together")
+  Yes__Not_Living_Together @map("Yes, Not Living Together")
+}
+
+enum complexion {
+  Fair
+  Wheatish
+  Dusky
+  Dark
+}
+
+enum diet_preference {
+  Vegetarian
+  Non_Vegetarian @map("Non-Vegetarian")
+  Vegan
+  Eggetarian
+}
+
+enum drinking_habit {
+  Non_Drinker        @map("Non-Drinker")
+  Occasional_Drinker @map("Occasional Drinker")
+  Regular_Drinker    @map("Regular Drinker")
+}
+
+enum education_level {
+  HIGH_SCHOOL  @map("HIGH SCHOOL")
+  DIPLOMA
+  GRADUATE
+  POSTGRADUATE
+  DOCTORATE
+  OTHER
+}
+
+enum family_background {
+  BUSINESS_CLASS @map("BUSINESS CLASS")
+  SERVICE_CLASS  @map("SERVICE CLASS")
+}
+
+enum family_status {
+  SIMPLE_CLASS @map("SIMPLE CLASS")
+  MIDDLE_CLASS @map("MIDDLE CLASS")
+  UPPER_CLASS  @map("UPPER CLASS")
+  HIGH_CLASS   @map("HIGH CLASS")
+}
+
+enum gender_type {
+  male
+  female
+  other
+}
+
+enum manglik_status {
+  Manglik
+  Non_Manglik               @map("Non-Manglik")
+  Don_t_Know                @map("Dont Know")
+  Do_Not_Believe_In_Manglik @map("Do Not Believe In Manglik")
+}
+
+enum maritial_status {
+  single
+  married
+  divorced
+  widowed
+}
+
+enum mother_tongue {
+  PUNJABI
+  HINDI
+  ENGLISH
+  OTHERS
+}
+
+enum occupation_type {
+  Employed
+  Self_Employed_Business_Owner @map("Self-Employed/Business Owner")
+  Unemployed
+  Student
+  Retired
+  Home_Maker                   @map("Home Maker")
+}
+
+enum physical_status {
+  Normal
+  Physically_Mentally_Challenged @map("Physically/Mentally Challenged")
+}
+
+enum profile_createdby {
+  SELF
+  PARENTS
+  SIBLINGS
+  FRIENDS
+  OTHERS
+}
+
+enum religion {
+  Sikh
+  Hindu
+  Others
+}
+
+enum residency_status {
+  CITIZEN
+  PERMANENT_RESIDENT  @map("PERMANENT RESIDENT")
+  TEMPORARY_RESIDENT  @map("TEMPORARY RESIDENT")
+  WORK_PERMIT_HOLDER  @map("WORK PERMIT HOLDER")
+  STUDENT_VISA_HOLDER @map("STUDENT VISA HOLDER")
+}
+
+enum smoking_habit {
+  Non_Smoker        @map("Non-Smoker")
+  Occasional_Smoker @map("Occasional Smoker")
+  Regular_Smoker    @map("Regular Smoker")
+}
+
+enum turban_pagri {
+  Yes
+  No
+  Amritdhari
+  Occasionally
+}

@@ -42,13 +42,35 @@ export function RouteLoader() {
     }
   }, [pathname, isInitialLoad, prevPathname]);
 
+  // Prevent body scroll and hide scrollbar when loader is active
+  useEffect(() => {
+    if (isLoading || isInitialLoad) {
+      // Store original styles
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      
+      // Get scrollbar width
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
+      // Apply styles to prevent layout shift
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+      return () => {
+        // Restore original styles
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [isLoading, isInitialLoad]);
+
   if (!isLoading && !isInitialLoad) return null;
 
   return (
-    <div>
+    <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Left Half */}
       <div
-        className={`fixed inset-y-0 left-0 w-1/2 z-50  transition-transform duration-700 ease-in-out ${
+        className={`absolute inset-y-0 left-0 w-1/2 transition-transform duration-700 ease-in-out ${
           fadeOut ? "-translate-x-full" : "translate-x-0"
         }`}
       >
@@ -65,7 +87,7 @@ export function RouteLoader() {
 
       {/* Right Half */}
       <div
-        className={`fixed inset-y-0 right-0 w-1/2 z-50 transition-transform duration-700 ease-in-out ${
+        className={`absolute inset-y-0 right-0 w-1/2 transition-transform duration-700 ease-in-out ${
           fadeOut ? "translate-x-full" : "translate-x-0"
         }`}
       >
