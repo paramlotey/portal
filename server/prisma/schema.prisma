@@ -98,6 +98,25 @@ model users {
   created_at  DateTime?  @default(now()) @db.Timestamp(6)
   updated_at  DateTime?  @default(now()) @db.Timestamp(6)
   profiles    profiles[]
+  drafts      drafts[]
+}
+
+model drafts {
+  id         String          @id @default(uuid())
+  userId     Int
+  formType   draft_form_type
+  data       Json
+  step       Int?            @default(1)
+  created_at DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at DateTime?       @default(now()) @db.Timestamp(6)
+  user       users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, formType])
+}
+
+enum draft_form_type {
+  PROFILE
+  PARTNER_PREFERENCE
 }
 
 enum annual_income_range {

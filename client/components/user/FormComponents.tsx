@@ -37,8 +37,10 @@ export const PillSelector = memo(
             className={cn(
               "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 border focus:outline-none cursor-pointer",
               isSelected
-                ? "bg-[#660b26] text-white border-[#660b26] shadow-lg shadow-[#660b26]/30 ring-2 ring-[#d4af37]/40"
-                : "bg-white text-gray-600 border-gray-200 hover:border-[#d4af37] hover:bg-[#d4af37]/5 hover:shadow-md hover:shadow-[#d4af37]/20",
+                ? // Selected: maroon bg in light, gold bg in dark
+                  "bg-[#660b26] text-white border-[#660b26] shadow-lg shadow-[#660b26]/30 ring-2 ring-[#d4af37]/40 dark:bg-primary dark:text-primary-foreground dark:border-primary dark:shadow-primary/20 dark:ring-primary/30"
+                : // Unselected: white in light, card surface in dark
+                  "bg-white text-gray-600 border-gray-200 hover:border-[#d4af37] hover:bg-[#d4af37]/5 hover:shadow-md hover:shadow-[#d4af37]/20 dark:bg-card dark:text-muted-foreground dark:border-border dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary",
             )}
           >
             {formatOption(option)}
@@ -49,8 +51,6 @@ export const PillSelector = memo(
   ),
 );
 PillSelector.displayName = "PillSelector";
-
-// Optimized ControlledSelect with memoization
 
 export const SiblingCounter = memo(
   ({
@@ -73,7 +73,7 @@ export const SiblingCounter = memo(
             type="number"
             min={0}
             placeholder="0"
-            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:border-[#d4af37]! focus:ring-2 focus:ring-[#d4af37]/20!"
+            className="h-12 rounded-xl border-border bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:border-[#d4af37]! focus:ring-2 focus:ring-[#d4af37]/20! dark:focus:ring-primary/20!"
             {...youngerRegister}
           />
         </div>
@@ -86,7 +86,7 @@ export const SiblingCounter = memo(
               type="number"
               min={0}
               placeholder="0"
-              className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:border-[#d4af37]! focus:ring-2 focus:ring-[#d4af37]/20!"
+              className="h-12 rounded-xl border-border bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:border-[#d4af37]! focus:ring-2 focus:ring-[#d4af37]/20! dark:focus:ring-primary/20!"
               {...elderRegister}
             />
           </div>
@@ -103,7 +103,7 @@ SiblingCounter.displayName = "SiblingCounter";
 
 export const PremiumCard = memo(
   ({ children }: { children: React.ReactNode }) => (
-    <Card className="bg-[#fffcfc] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-[#d4af37]/10 rounded-[2rem] overflow-hidden transition-all duration-300 hover:shadow-[0_12px_40px_rgba(212,175,55,0.15)]">
+    <Card className="bg-card shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] border border-[#d4af37]/10 dark:border-primary/15 rounded-[2rem] overflow-hidden transition-all duration-300 hover:shadow-[0_12px_40px_rgba(212,175,55,0.15)] dark:hover:shadow-[0_12px_40px_rgba(201,169,110,0.12)]">
       {children}
     </Card>
   ),
@@ -112,7 +112,7 @@ PremiumCard.displayName = "PremiumCard";
 
 export const CardHeaderComp = memo(({ title }: { title: string }) => (
   <CardHeader className="gap-0 px-10 py-2">
-    <CardTitle className="text-2xl md:text-3xl font-serif text-[#660b26] font-semibold tracking-wide">
+    <CardTitle className="text-2xl md:text-3xl font-serif text-[#660b26] dark:text-primary font-semibold tracking-wide">
       {title}
     </CardTitle>
   </CardHeader>
@@ -120,7 +120,7 @@ export const CardHeaderComp = memo(({ title }: { title: string }) => (
 CardHeaderComp.displayName = "CardHeaderComp";
 
 export const PremiumSeparator = memo(() => (
-  <Separator className="h-px bg-linear-to-r from-transparent via-[#d4af37]/30 to-transparent" />
+  <Separator className="h-px bg-linear-to-r from-transparent via-[#d4af37]/30 to-transparent dark:via-primary/20" />
 ));
 PremiumSeparator.displayName = "PremiumSeparator";
 
@@ -156,16 +156,21 @@ export const ControlledSelect = memo(
             <SelectTrigger
               aria-label={name}
               className={cn(
-                "h-12! w-full rounded-xl border bg-gray-50/50 px-4 py-2 text-sm text-gray-800 transition-all focus:bg-white focus:outline-none",
+                "h-12! w-full rounded-xl border px-4 py-2 text-sm transition-all focus:outline-none",
+                // light: gray tones / dark: card surface tones
+                "bg-gray-50/50 text-gray-800 dark:bg-secondary dark:text-foreground",
+                "focus:bg-white dark:focus:bg-card",
+                // placeholder color
+                "[&>span[data-placeholder]]:text-gray-400 dark:[&>span[data-placeholder]]:text-muted-foreground",
                 fieldState.error
                   ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20"
-                  : "border-gray-200 focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37]/20 focus:shadow-md focus:shadow-[#d4af37]/10",
+                  : "border-gray-200 dark:border-border focus:border-[#d4af37] dark:focus:border-primary focus:ring-2 focus:ring-[#d4af37]/20 dark:focus:ring-primary/20 focus:shadow-md focus:shadow-[#d4af37]/10 dark:focus:shadow-primary/10",
               )}
             >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent
-              className="max-h-75 rounded-xl border-[#d4af37]/20!"
+              className="max-h-75 rounded-xl border-[#d4af37]/20! dark:border-primary/20! dark:bg-card"
               position="popper"
               align="start"
             >
@@ -173,7 +178,7 @@ export const ControlledSelect = memo(
                 <SelectItem
                   key={option}
                   value={option}
-                  className="rounded-lg focus:bg-[#d4af37]/10 focus:text-[#660b26] cursor-pointer"
+                  className="rounded-lg cursor-pointer focus:bg-[#d4af37]/10 focus:text-[#660b26] dark:focus:bg-primary/15 dark:focus:text-primary dark:text-foreground"
                 >
                   {formatFn ? formatFn(option) : option}
                 </SelectItem>
@@ -191,6 +196,7 @@ export const ControlledSelect = memo(
   ),
 );
 ControlledSelect.displayName = "ControlledSelect";
+
 export const PremiumLabel = memo(
   ({
     children,
@@ -211,11 +217,16 @@ export const PremiumLabel = memo(
       )}
     >
       {children}{" "}
-      {required && <span className="text-[#660b26] text-sm ml-0.5">*</span>}
+      {required && (
+        <span className="text-[#660b26] dark:text-primary text-sm ml-0.5">
+          *
+        </span>
+      )}
     </Label>
   ),
 );
 PremiumLabel.displayName = "PremiumLabel";
+
 export const FormField = memo(
   ({
     label,
@@ -243,10 +254,14 @@ export const FormField = memo(
         type={type}
         placeholder={placeholder}
         className={cn(
-          "h-12 w-full rounded-xl border bg-gray-50/50 px-4 py-2 text-sm text-gray-800 transition-all placeholder:text-gray-400 focus:bg-white focus:outline-none",
+          "h-12 w-full rounded-xl border px-4 py-2 text-sm transition-all focus:outline-none",
+          // light: gray surface / dark: card surface
+          "bg-gray-50/50 text-gray-800 placeholder:text-gray-400",
+          "dark:bg-secondary dark:text-foreground dark:placeholder:text-muted-foreground",
+          "focus:bg-white dark:focus:bg-card",
           error
             ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20"
-            : "border-gray-200 focus:border-[#d4af37]! focus:ring-2 focus:ring-[#d4af37]/20! focus:shadow-md focus:shadow-[#d4af37]/10",
+            : "border-gray-200 dark:border-border focus:border-[#d4af37]! dark:focus:border-primary! focus:ring-2 focus:ring-[#d4af37]/20! dark:focus:ring-primary/20! focus:shadow-md focus:shadow-[#d4af37]/10 dark:focus:shadow-primary/10",
         )}
         {...register}
       />
